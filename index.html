@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuratore Fotovoltaico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1em;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: #000;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #000;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results h2 {
+            color: #000;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            color: #000;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .result-unit {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 5px;
+        }
+
+        .highlight-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #000;
+            margin-top: 20px;
+        }
+
+        .highlight-box h3 {
+            color: #000;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .highlight-box p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 1em;
+        }
+
+        .price-highlight {
+            text-align: center;
+            background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .price-highlight .label {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .price-highlight .value {
+            font-size: 3em;
+            font-weight: 700;
+        }
+
+        .payback-info {
+            margin-top: 15px;
+            font-size: 0.95em;
+            opacity: 0.9;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .savings-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid #f0f0f0;
+        }
+
+        .savings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .savings-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .savings-card:hover {
+            transform: scale(1.05);
+        }
+
+        .savings-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .savings-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .savings-value {
+            color: #28a745;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .energy-surplus {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ffc107;
+        }
+
+        .energy-surplus h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .energy-surplus p {
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .savings-section {
+            display: none;
+        }
+
+        .savings-section.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .price-highlight .value {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Configuratore Fotovoltaico</h1>
+            <p>Calcola il tuo impianto fotovoltaico ideale</p>
+        </div>
+        
+        <div class="content">
+            <form id="solarForm">
+                <div class="form-group">
+                    <label for="provincia">📍 Seleziona la tua provincia</label>
+                    <select id="provincia" required>
+                        <option value="">-- Scegli la provincia --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="metratura">📐 Metri quadri disponibili sul tetto</label>
+                    <select id="metratura" required>
+                        <option value="">-- Scegli la metratura --</option>
+                        <option value="15-20">15-20 m²</option>
+                        <option value="20-25">20-25 m²</option>
+                        <option value="25-30">25-30 m²</option>
+                        <option value="30-45">30-45 m²</option>
+                        <option value="45-60">45-60 m²</option>
+                        <option value="60-80">60-80 m²</option>
+                        <option value="100-150">100-150 m²</option>
+                        <option value="150-200">150-200 m²</option>
+                        <option value="250">250 m²</option>
+                        <option value="300">300 m²</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="persone">👥 Numero di persone in casa</label>
+                    <select id="persone" required>
+                        <option value="">-- Scegli il numero di persone --</option>
+                        <option value="1">1 persona</option>
+                        <option value="2-3">2-3 persone</option>
+                        <option value="3-5">3-5 persone</option>
+                        <option value="5-7">5-7 persone</option>
+                        <option value="7+">7+ persone</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="calculate-btn">🔆 Calcola il tuo impianto</button>
+            </form>
+
+            <div id="results" class="results">
+                <h2>📊 Il tuo impianto fotovoltaico</h2>
+                
+                <div class="result-grid">
+                    <div class="result-card">
+                        <div class="result-label">Pannelli installabili</div>
+                        <div class="result-value" id="numPannelli">0</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Potenza impianto</div>
+                        <div class="result-value" id="potenzaKw">0 <span class="result-unit">kW</span></div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Produzione annua stimata</div>
+                        <div class="result-value" id="produzioneAnnua">0 <span class="result-unit">kWh</span></div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Consumo familiare stimato</div>
+                        <div class="result-value" id="consumoFamiliare">0 <span class="result-unit">kWh</span></div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💰 Risparmio energetico</h3>
+                    <p id="risparmioText"></p>
+                </div>
+
+                <div class="savings-section" id="savingsSection">
+                    <div class="savings-grid">
+                        <div class="savings-card">
+                            <div class="savings-icon">💵</div>
+                            <div class="savings-label">Risparmio annuo in bolletta</div>
+                            <div class="savings-value" id="risparmioAnnuo">€ 0</div>
+                        </div>
+                        
+                        <div class="savings-card">
+                            <div class="savings-icon">📅</div>
+                            <div class="savings-label">Risparmio in 25 anni</div>
+                            <div class="savings-value" id="risparmio25anni">€ 0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="energy-surplus" id="energySurplus">
+                        <h4>⚡ Energia in eccesso</h4>
+                        <p id="surplusText"></p>
+                    </div>
+                </div>
+
+                <div class="price-highlight">
+                    <div class="label">PREZZO STIMATO IMPIANTO</div>
+                    <div class="value" id="prezzoFinale">€ 0</div>
+                    <div class="payback-info" id="paybackInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // TABELLA PREZZI - FACILMENTE MODIFICABILE
+        // ========================================
+        // Modifica questi valori quando cambiano i prezzi
+        const tabellaPrezziFissi = {
+            "15-20": { moduli: 7, potenzaKw: 3.1, prezzo: 6914.29 },
+            "20-25": { moduli: 10, potenzaKw: 4.2, prezzo: 7961.90 },
+            "25-30": { moduli: 12, potenzaKw: 5.4, prezzo: 9805.71 },
+            "30-45": { moduli: 14, potenzaKw: 6.3, prezzo: 10717.14 },
+            "45-60": { moduli: 25, potenzaKw: 10.9, prezzo: 16887.62 },
+            "60-80": { moduli: 34, potenzaKw: 15.1, prezzo: 22628.57 },
+            "100-150": { moduli: 60, potenzaKw: 26.2, prezzo: 36666.67 },
+            "150-200": { moduli: 71, potenzaKw: 31.4, prezzo: 44000.00 },
+            "250": { moduli: 119, potenzaKw: 52.4, prezzo: 62857.14 },
+            "300": { moduli: 143, potenzaKw: 62.9, prezzo: 75428.57 }
+        };
+
+        // Prezzo energia elettrica (€/kWh)
+        const prezzoEnergiaKwh = 0.30;
+
+        // Dati irraggiamento solare per provincia
+        const irraggiamentoProvince = {
+            "AQ":1287.788, "CH": 1264.77, "PE": 1291.05, "TE": 1211.45,
+            "MT": 1292.516, "PZ": 1246.07,
+            "CS": 1318.864, "CZ": 1341.80, "KR": 1354.32, "RC": 1357.30, "VV": 1295.99,
+            "AV": 1244.199, "BN": 1226.05, "CE": 1275.41, "NA": 1338.4, "SA": 1287.858,
+            "BO": 1165.92, "FC": 1174, "FE": 1152.22, "MO": 1175.16, "PC": 1163.62, "PR": 1173.36, "RA": 1200.33, "RE": 1755.097, "RN": 1197.96,
+            "GO": 1084.99, "PN": 1142.21, "TS": 1093.89, "UD": 1099.32,
+            "FR": 1303.63, "LT": 1361.06, "RI": 1263.04, "RM": 1330.05, "VT": 1312.05,
+            "GE": 1166.47, "IM": 1250.45, "SP": 1190.88, "SV": 1146.94,
+            "BG": 1181.70, "BS": 1189.14, "CO": 1161.54, "CR": 1175.72, "LC": 1153.96, "LO": 1178.01, "MB": 1181.70, "MI": 1180.17, "MN": 1164.81, "PV": 1162.86, "SO": 1195.04, "VA": 1182.04,
+            "AN": 1160.42, "AP": 1186.43, "FM": 1251.57, "MC": 1198.94, "PU": 1154.93,
+            "CB": 1228.90, "IS": 1268.74,
+            "AL": 1170.78, "AT": 1200.74, "BI": 1199.70, "CN": 1181.84, "NO": 1214.37, "TO": 1210.90, "VB": 1453.6, "VC": 1213.82,
+            "BA": 1278.05, "BR": 1345.98, "BT": 1297.87, "FG": 1312.54, "LE": 1319.28, "TA": 1285.98,
+            "SM": 1127.26,
+            "CA": 1437.11, "CI": 1400.06, "NU": 1428.84, "OG": 1369.89, "OR": 1432.73, "OT": 1386.57, "SS": 1344.72, "VS": 1440.66,
+            "AG": 1512.8, "CL": 1479.94, "CT": 1473.47, "EN": 1440.94, "ME": 1300.85, "PA": 1366.13, "RG": 1474.59, "SR": 1453.52, "TP": 1418.13,
+            "BZ": 1264.15, "TN": 1215.35,
+            "AR": 1177.73, "FI": 1180.65, "GR": 1351.05, "LI": 1298.5, "LU": 1209.9, "MS": 1149.37, "PI": 1248.44, "PO": 1173.77, "PT": 1183.78, "SI": 1219.86,
+            "PG": 1234.18, "TR": 1298.84,
+            "AO": 1278.05,
+            "BL": 1117.53, "PD": 1144.92, "RO": 1141.65, "TV": 1148.60, "VE": 1145.06, "VI": 1160.08, "VR": 1177.87
+        };
+
+        // Nomi delle province per il menu a tendina
+        const nomiProvince = {
+            "AQ": "L'Aquila", "CH": "Chieti", "PE": "Pescara", "TE": "Teramo",
+            "MT": "Matera", "PZ": "Potenza",
+            "CS": "Cosenza", "CZ": "Catanzaro", "KR": "Crotone", "RC": "Reggio Calabria", "VV": "Vibo Valentia",
+            "AV": "Avellino", "BN": "Benevento", "CE": "Caserta", "NA": "Napoli", "SA": "Salerno",
+            "BO": "Bologna", "FC": "Forlì-Cesena", "FE": "Ferrara", "MO": "Modena", "PC": "Piacenza", "PR": "Parma", "RA": "Ravenna", "RE": "Reggio Emilia", "RN": "Rimini",
+            "GO": "Gorizia", "PN": "Pordenone", "TS": "Trieste", "UD": "Udine",
+            "FR": "Frosinone", "LT": "Latina", "RI": "Rieti", "RM": "Roma", "VT": "Viterbo",
+            "GE": "Genova", "IM": "Imperia", "SP": "La Spezia", "SV": "Savona",
+            "BG": "Bergamo", "BS": "Brescia", "CO": "Como", "CR": "Cremona", "LC": "Lecco", "LO": "Lodi", "MB": "Monza e Brianza", "MI": "Milano", "MN": "Mantova", "PV": "Pavia", "SO": "Sondrio", "VA": "Varese",
+            "AN": "Ancona", "AP": "Ascoli Piceno", "FM": "Fermo", "MC": "Macerata", "PU": "Pesaro e Urbino",
+            "CB": "Campobasso", "IS": "Isernia",
+            "AL": "Alessandria", "AT": "Asti", "BI": "Biella", "CN": "Cuneo", "NO": "Novara", "TO": "Torino", "VB": "Verbano-Cusio-Ossola", "VC": "Vercelli",
+            "BA": "Bari", "BR": "Brindisi", "BT": "Barletta-Andria-Trani", "FG": "Foggia", "LE": "Lecce", "TA": "Taranto",
+            "SM": "San Marino",
+            "CA": "Cagliari", "CI": "Carbonia-Iglesias", "NU": "Nuoro", "OG": "Ogliastra", "OR": "Oristano", "OT": "Olbia-Tempio", "SS": "Sassari", "VS": "Medio Campidano",
+            "AG": "Agrigento", "CL": "Caltanissetta", "CT": "Catania", "EN": "Enna", "ME": "Messina", "PA": "Palermo", "RG": "Ragusa", "SR": "Siracusa", "TP": "Trapani",
+            "BZ": "Bolzano", "TN": "Trento",
+            "AR": "Arezzo", "FI": "Firenze", "GR": "Grosseto", "LI": "Livorno", "LU": "Lucca", "MS": "Massa-Carrara", "PI": "Pisa", "PO": "Prato", "PT": "Pistoia", "SI": "Siena",
+            "PG": "Perugia", "TR": "Terni",
+            "AO": "Aosta",
+            "BL": "Belluno", "PD": "Padova", "RO": "Rovigo", "TV": "Treviso", "VE": "Venezia", "VI": "Vicenza", "VR": "Verona"
+        };
+
+        // Consumi medi per nucleo familiare (kWh/anno)
+        const consumiMedi = {
+            '1': 2200,
+            '2-3': 4500,
+            '3-5': 6000,
+            '5-7': 7500,
+            '7+': 9000
+        };
+
+        // Popola il menu a tendina delle province
+        const provinciaSelect = document.getElementById('provincia');
+        Object.keys(nomiProvince).sort((a, b) => nomiProvince[a].localeCompare(nomiProvince[b])).forEach(sigla => {
+            const option = document.createElement('option');
+            option.value = sigla;
+            option.textContent = nomiProvince[sigla];
+            provinciaSelect.appendChild(option);
+        });
+
+        // Gestione del form
+        document.getElementById('solarForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const provincia = document.getElementById('provincia').value;
+            const metratura = document.getElementById('metratura').value;
+            const persone = document.getElementById('persone').value;
+            
+            // Recupera i dati dalla tabella prezzi
+            const datiImpianto = tabellaPrezziFissi[metratura];
+            const numPannelli = datiImpianto.moduli;
+            const potenzaKw = datiImpianto.potenzaKw;
+            const prezzoTotale = datiImpianto.prezzo;
+            
+            // Calcolo produzione annua
+            const irraggiamento = irraggiamentoProvince[provincia];
+            const produzioneAnnua = Math.round(potenzaKw * irraggiamento);
+            
+            const consumoFamiliare = consumiMedi[persone];
+            
+            // Calcolo risparmio
+            const risparmioKwh = Math.min(produzioneAnnua, consumoFamiliare);
+            const percentualeAutoconsumo = Math.round((risparmioKwh / consumoFamiliare) * 100);
+            
+            // Calcolo risparmio economico
+            const risparmioAnnuoEuro = Math.round(risparmioKwh * prezzoEnergiaKwh);
+            const risparmio25anni = risparmioAnnuoEuro * 25;
+            
+            // Calcolo energia in eccesso
+            const energiaEccesso = Math.max(0, produzioneAnnua - consumoFamiliare);
+            
+            // Calcolo tempo di rientro (payback)
+            const tempoRientroAnni = (prezzoTotale / risparmioAnnuoEuro).toFixed(1);
+            
+            // Mostra risultati
+            document.getElementById('numPannelli').textContent = numPannelli;
+            document.getElementById('potenzaKw').innerHTML = `${potenzaKw} <span class="result-unit">kW</span>`;
+            document.getElementById('produzioneAnnua').innerHTML = `${produzioneAnnua.toLocaleString('it-IT')} <span class="result-unit">kWh</span>`;
+            document.getElementById('consumoFamiliare').innerHTML = `${consumoFamiliare.toLocaleString('it-IT')} <span class="result-unit">kWh</span>`;
+            document.getElementById('prezzoFinale').textContent = `€ ${prezzoTotale.toLocaleString('it-IT')}`;
+            
+            let risparmioText = `Il tuo impianto fotovoltaico produrrà circa <strong>${produzioneAnnua.toLocaleString('it-IT')} kWh all'anno</strong>. `;
+            
+            if (produzioneAnnua >= consumoFamiliare) {
+                risparmioText += `Questo copre <strong>il 100% del tuo fabbisogno energetico</strong> (${consumoFamiliare.toLocaleString('it-IT')} kWh/anno) e produrrai anche un surplus di energia che potrai immettere in rete!`;
+            } else {
+                risparmioText += `Questo copre circa <strong>il ${percentualeAutoconsumo}% del tuo fabbisogno energetico</strong> annuale stimato (${consumoFamiliare.toLocaleString('it-IT')} kWh), permettendoti di risparmiare significativamente sulla bolletta elettrica.`;
+            }
+            
+            document.getElementById('risparmioText').innerHTML = risparmioText;
+            
+            // Mostra risparmio economico
+            document.getElementById('risparmioAnnuo').textContent = `€ ${risparmioAnnuoEuro.toLocaleString('it-IT')}`;
+            document.getElementById('risparmio25anni').textContent = `€ ${risparmio25anni.toLocaleString('it-IT')}`;
+            
+            // Mostra la sezione savings
+            document.getElementById('savingsSection').classList.add('show');
+            
+            // Gestione energia in eccesso
+            const surplusSection = document.getElementById('energySurplus');
+            if (energiaEccesso > 0) {
+                surplusSection.style.display = 'block';
+                const valoreSurplus = Math.round(energiaEccesso * 0.10); // Prezzo medio vendita energia ~10 cent/kWh
+                document.getElementById('surplusText').innerHTML = `
+                    Hai un <strong>surplus di ${energiaEccesso.toLocaleString('it-IT')} kWh all'anno</strong>! 
+                    Puoi:<br>
+                    • <strong>Vendere</strong> l'energia in rete (valore stimato: ~€${valoreSurplus.toLocaleString('it-IT')}/anno)<br>
+                    • <strong>Accumulare</strong> l'energia con un sistema di storage (batterie) per usarla quando ne hai bisogno
+                `;
+            } else {
+                surplusSection.style.display = 'none';
+            }
+            
+            // Info tempo di rientro
+            document.getElementById('paybackInfo').innerHTML = `
+                💡 Tempo di rientro stimato: <strong>${tempoRientroAnni} anni</strong><br>
+                Con il tuo risparmio annuo di €${risparmioAnnuoEuro.toLocaleString('it-IT')}, recuperi l'investimento in ${tempoRientroAnni} anni!
+            `;
+            
+            const results = document.getElementById('results');
+            results.classList.add('show');
+            results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    </script>
+</body>
+</html>
